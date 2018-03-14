@@ -4,8 +4,8 @@
     "description": "vizorgames test",
     "main": "index.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "node server"
+        "start": "node server",
+        "test": "echo \"Error: no test specified\" && exit 1"
     },
     "author": "af",
     "license": "MIT",
