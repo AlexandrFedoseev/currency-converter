@@ -14,6 +14,7 @@ function calculateRate(base, converted) {
 
 const server = thrift.createServer(CurrencyConverter, {
     convert: (amount, fromCurrency, toCurrency, result) => {
+        console.log('convert requested:', {amount, fromCurrency, toCurrency});
         request(`${
             API_URL_BASE
         }?api_key=${
@@ -25,6 +26,7 @@ const server = thrift.createServer(CurrencyConverter, {
         }&amount=${
             amount
         }`, (error, response, body) => {
+            console.log('results:', {error, response, body});
             if (error != null || response.statusCode != 200) {
                 const err = new ttypes.RequestError();
                 err.message = 'Currency API is broken';
@@ -48,6 +50,6 @@ const server = thrift.createServer(CurrencyConverter, {
     },
 });
 
-const port = process.env.PORT || 3000
+const port = process.env.PORT || 5000
 console.log('app listen to port:', port);
 server.listen(port);
