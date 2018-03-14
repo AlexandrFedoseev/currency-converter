@@ -1,17 +1,21 @@
 {
     "name": "thr",
     "version": "1.0.0",
-    "description": "",
+    "description": "vizorgames test",
     "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "start": "node server"
     },
-    "author": "",
-    "license": "ISC",
+    "author": "af",
+    "license": "MIT",
+    "git": "https://github.com/AlexandrFedoseev/currency-converter.git",
     "dependencies": {
         "assert": "^1.4.1",
         "request": "^2.85.0",
         "thrift": "^0.11.0"
+    },
+    "engines": {
+        "node": "9.8.0"
     }
 }
