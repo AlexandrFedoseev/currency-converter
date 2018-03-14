@@ -1,9 +1,9 @@
-"use strict";
+'use strict';
 
-const thrift = require("thrift");
+const thrift = require('thrift');
 const request = require('request');
-const CurrencyConverter = require("./gen-nodejs/CurrencyConverter");
-const ttypes = require("./gen-nodejs/currency-converter_types");
+const CurrencyConverter = require('./gen-nodejs/CurrencyConverter');
+const ttypes = require('./gen-nodejs/currency-converter_types');
 
 const API_ACCESS_KEY = 'NXbSN8gcTSbWJkNJ2JtqbrFGRqM3P5';
 const API_URL_BASE = 'https://www.amdoren.com/api/currency.php';
@@ -49,4 +49,5 @@ const server = thrift.createServer(CurrencyConverter, {
 });
 
 const port = process.env.PORT || 3000
+console.log('app listen to port:', port);
 server.listen(port);

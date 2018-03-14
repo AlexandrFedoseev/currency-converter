@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 if (process.argv == null || process.argv.length != 4) {
   console.log('Two arguments is required as {amount: number} \'{from:currency}->{to:currency}\'');
@@ -27,7 +27,7 @@ const assert = require('assert');
 const transport = thrift.TBufferedTransport;
 const protocol = thrift.TBinaryProtocol;
 
-const connection = thrift.createConnection("currency-converter-thr.herokuapp.com", 8080, {
+const connection = thrift.createConnection('https://currency-converter-thr.herokuapp.com', 5000, {
   transport : transport,
   protocol : protocol
 });
@@ -40,7 +40,7 @@ const client = thrift.createClient(CurrencyConverter, connection);
 
 client.convert(amount, currencies[0], currencies[1], (err, result) => {
   if (err) {
-    console.log("Error : " + err);
+    console.log('Error : ' + err);
   } else {
     console.log(result);
   }
