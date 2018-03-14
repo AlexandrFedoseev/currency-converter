@@ -27,7 +27,7 @@ const assert = require('assert');
 const transport = thrift.TBufferedTransport;
 const protocol = thrift.TBinaryProtocol;
 
-const connection = thrift.createConnection("https://currency-converter-thr.herokuapp.com", 9090, {
+const connection = thrift.createConnection("currency-converter-thr.herokuapp.com", 8080, {
   transport : transport,
   protocol : protocol
 });

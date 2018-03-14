@@ -48,4 +48,5 @@ const server = thrift.createServer(CurrencyConverter, {
     },
 });
 
-server.listen(9090);
+const port = process.env.PORT || 3000
+server.listen(port);
