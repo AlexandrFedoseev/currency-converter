@@ -31,7 +31,6 @@ const server = thrift.createServer(CurrencyConverter, {
         }&amount=${
             amount
         }`, (error, response, body) => {
-            console.log('results:', {error, response, body});
             if (error != null || response.statusCode != 200) {
                 const err = new ttypes.RequestError();
                 err.message = 'Currency API is broken';
