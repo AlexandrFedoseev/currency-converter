@@ -13,6 +13,11 @@ function calculateRate(base, converted) {
 }
 
 const server = thrift.createServer(CurrencyConverter, {
+    ping: function(result) {
+        console.log("ping()");
+        result(null);
+    },
+
     convert: (amount, fromCurrency, toCurrency, result) => {
         console.log('convert requested:', {amount, fromCurrency, toCurrency});
         request(`${

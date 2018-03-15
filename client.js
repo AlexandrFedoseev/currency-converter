@@ -37,7 +37,9 @@ connection.on('error', function(err) {
 });
 
 const client = thrift.createClient(CurrencyConverter, connection);
-
+client.ping(function(err, response) {
+  console.log('ping()');
+});
 client.convert(amount, currencies[0], currencies[1], (err, result) => {
   if (err) {
     console.log('Error : ' + err);
