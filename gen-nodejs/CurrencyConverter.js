@@ -13,6 +13,62 @@ var Q = thrift.Q;
 var ttypes = require('./currency-converter_types');
 //HELPER FUNCTIONS AND STRUCTURES
 
+var CurrencyConverter_ping_args = function(args) {
+};
+CurrencyConverter_ping_args.prototype = {};
+CurrencyConverter_ping_args.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    input.skip(ftype);
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+CurrencyConverter_ping_args.prototype.write = function(output) {
+  output.writeStructBegin('CurrencyConverter_ping_args');
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+var CurrencyConverter_ping_result = function(args) {
+};
+CurrencyConverter_ping_result.prototype = {};
+CurrencyConverter_ping_result.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    input.skip(ftype);
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+CurrencyConverter_ping_result.prototype.write = function(output) {
+  output.writeStructBegin('CurrencyConverter_ping_result');
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
 var CurrencyConverter_convert_args = function(args) {
   this.amount = null;
   this.fromCurrency = null;
@@ -175,6 +231,49 @@ var CurrencyConverterClient = exports.Client = function(output, pClass) {
 CurrencyConverterClient.prototype = {};
 CurrencyConverterClient.prototype.seqid = function() { return this._seqid; };
 CurrencyConverterClient.prototype.new_seqid = function() { return this._seqid += 1; };
+CurrencyConverterClient.prototype.ping = function(callback) {
+  this._seqid = this.new_seqid();
+  if (callback === undefined) {
+    var _defer = Q.defer();
+    this._reqs[this.seqid()] = function(error, result) {
+      if (error) {
+        _defer.reject(error);
+      } else {
+        _defer.resolve(result);
+      }
+    };
+    this.send_ping();
+    return _defer.promise;
+  } else {
+    this._reqs[this.seqid()] = callback;
+    this.send_ping();
+  }
+};
+
+CurrencyConverterClient.prototype.send_ping = function() {
+  var output = new this.pClass(this.output);
+  output.writeMessageBegin('ping', Thrift.MessageType.CALL, this.seqid());
+  var args = new CurrencyConverter_ping_args();
+  args.write(output);
+  output.writeMessageEnd();
+  return this.output.flush();
+};
+
+CurrencyConverterClient.prototype.recv_ping = function(input,mtype,rseqid) {
+  var callback = this._reqs[rseqid] || function() {};
+  delete this._reqs[rseqid];
+  if (mtype == Thrift.MessageType.EXCEPTION) {
+    var x = new Thrift.TApplicationException();
+    x.read(input);
+    input.readMessageEnd();
+    return callback(x);
+  }
+  var result = new CurrencyConverter_ping_result();
+  result.read(input);
+  input.readMessageEnd();
+
+  callback(null);
+};
 CurrencyConverterClient.prototype.convert = function(amount, fromCurrency, toCurrency, callback) {
   this._seqid = this.new_seqid();
   if (callback === undefined) {
@@ -246,6 +345,42 @@ CurrencyConverterProcessor.prototype.process = function(input, output) {
   }
 }
 ;
+CurrencyConverterProcessor.prototype.process_ping = function(seqid, input, output) {
+  var args = new CurrencyConverter_ping_args();
+  args.read(input);
+  input.readMessageEnd();
+  if (this._handler.ping.length === 0) {
+    Q.fcall(this._handler.ping)
+      .then(function(result) {
+        var result_obj = new CurrencyConverter_ping_result({success: result});
+        output.writeMessageBegin("ping", Thrift.MessageType.REPLY, seqid);
+        result_obj.write(output);
+        output.writeMessageEnd();
+        output.flush();
+      }, function (err) {
+        var result;
+        result = new Thrift.TApplicationException(Thrift.TApplicationExceptionType.UNKNOWN, err.message);
+        output.writeMessageBegin("ping", Thrift.MessageType.EXCEPTION, seqid);
+        result.write(output);
+        output.writeMessageEnd();
+        output.flush();
+      });
+  } else {
+    this._handler.ping(function (err, result) {
+      var result_obj;
+      if ((err === null || typeof err === 'undefined')) {
+        result_obj = new CurrencyConverter_ping_result((err !== null || typeof err === 'undefined') ? err : {success: result});
+        output.writeMessageBegin("ping", Thrift.MessageType.REPLY, seqid);
+      } else {
+        result_obj = new Thrift.TApplicationException(Thrift.TApplicationExceptionType.UNKNOWN, err.message);
+        output.writeMessageBegin("ping", Thrift.MessageType.EXCEPTION, seqid);
+      }
+      result_obj.write(output);
+      output.writeMessageEnd();
+      output.flush();
+    });
+  }
+};
 CurrencyConverterProcessor.prototype.process_convert = function(seqid, input, output) {
   var args = new CurrencyConverter_convert_args();
   args.read(input);
